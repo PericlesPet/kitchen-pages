@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WF Quick Run</title>
+<style>
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --ink:#1f2a22; --muted:#6b7268; --line:#dcdcd2;
+  --accent:#2f6b45; --accent-soft:#e3efe6; --top:#9a5b00; --top-soft:#fbeed6; --warn-soft:#f1efe8;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121713; --card:#1b221d; --ink:#e9eee8; --muted:#9aa49b; --line:#2d372f;
+  --accent:#6fbf8b; --accent-soft:#1f3326; --top:#f0b45a; --top-soft:#3a2c14; --warn-soft:#1f2420; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121713; --card:#1b221d; --ink:#e9eee8; --muted:#9aa49b; --line:#2d372f;
+  --accent:#6fbf8b; --accent-soft:#1f3326; --top:#f0b45a; --top-soft:#3a2c14; --warn-soft:#1f2420; color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.4}
+.wrap{max-width:600px;margin:0 auto;padding:0 16px 56px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 10px;border-bottom:1px solid var(--line)}
+h1{font-size:20px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 8px}
+.bar{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.bar button,.chip{background:var(--accent-soft);color:var(--accent);border:0;border-radius:6px;padding:5px 10px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--card)}
+.legend{font-size:12px;color:var(--muted);margin:12px 0 0}
+section{margin-top:22px}
+h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 2px}
+.where{font-size:12.5px;color:var(--muted);margin:0 0 6px}
+.item{display:grid;grid-template-columns:26px 72px minmax(0,1fr);gap:10px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px}
+.item.top{border-color:var(--top);box-shadow:inset 3px 0 0 var(--top)}
+.item.on{background:var(--accent-soft)}
+.item input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--accent)}
+.ph{width:72px;height:72px;background:#fff;border-radius:6px;object-fit:contain;padding:3px}
+.name{font-weight:600;font-size:14.5px}
+.meta{font-size:12.5px;color:var(--muted);margin-top:2px}
+.meta b{color:var(--ink);font-weight:600}
+.pp{display:inline-block;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:0 5px;font-size:12px}
+.item.on .pp{background:var(--card)}
+.use{font-size:13px;margin-top:3px}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:1px;background:var(--top-soft);color:var(--top)}
+.tag.sub{background:var(--warn-soft);color:var(--muted)}
+a.lnk{font-size:12.5px;color:var(--accent);font-weight:600}
+.note{background:var(--warn-soft);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--muted);margin-top:8px}
+.note a{color:var(--accent)}
+.combos{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 14px;margin-top:8px}
+.combos li{margin:8px 0;font-size:14px}
+.foot{font-size:12px;color:var(--muted);margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>WF Quick Run · no-cook protein</h1>
+    <p class="sub">Grouped by store section so you can walk it. Tick what you want; ★ = recommended short run.</p>
+    <div class="bar"><span id="count">0 picked</span>
+      <button class="chip" id="topOnly" type="button" aria-pressed="false">★ only</button>
+      <button id="copy" type="button">Copy my picks</button>
+      <button id="reset" type="button">Reset</button></div>
+  </header>
+  <p class="legend"><span class="pp">P/100</span> = grams of protein per 100 kcal (goal ≥ 10). Numbers come from the label on the Whole Foods Amazon listing; ≈ means the listing had no label and the number is an estimate. Prices are from the Amazon WF listing and can differ in store. Aisle numbers vary by store, so sections are by department.</p>
+  <main id="list"></main>
+
+  <section>
+    <h2>No-cook combos</h2>
+    <ul class="combos">
+      <li><b>Turkey or chicken wrap:</b> Carb Bueno or Egglife wrap + 4 slices turkey / pulled rotisserie breast + 2 tbsp Greek yogurt mixed with mustard. ~30–35 g P.</li>
+      <li><b>Yogurt cup:</b> Chobani 20 g or siggi's straight from the fridge. 14–20 g P.</li>
+      <li><b>Shake + scoop:</b> Chobani 30 g drink, or milk blended/shaken with a scoop of your protein powder.</li>
+      <li><b>Shrimp cocktail:</b> thawed cooked shrimp (fridge overnight or cold water 10 min) + cocktail sauce + lemon. ~18 g P per 3 oz.</li>
+      <li><b>Snack plate:</b> Chomps stick + cottage cheese + egg white bites (eat cold or 30 s in the microwave).</li>
+    </ul>
+  </section>
+  <p class="foot">Not on the Whole Foods Amazon storefront (so not listed): Oikos Pro / Triple Zero, Fairlife milk, Core Power, Good Culture plain 16 oz, Fage 0%, Ratio, Quest. Checked but under 10 g P/100 kcal: string cheese (8.8), hard-cooked eggs (8.3), edamame (7.9), Organic Valley Protein Plus whole milk, protein bars.</p>
+</div>
+
+<script>
+(function(){
+  var L='https://www.amazon.com/dp/', Q='?almBrandId=VUZHIFdob2xlIEZvb2Rz';
+  // [id, img, name, size, price, serving, kcal, protein, use, asin, flags]  flags: t=top, s=substitute text, a=approx
+  var S=[
+   {s:'Deli · pre-sliced deli case', w:'Refrigerated case next to the deli counter (or ask the counter to slice).', i:[
+    ['turkey14','turkey14','365 Oven-Roasted Turkey Breast, Value Pack','14 oz','$9.99','4 slices (56 g)',60,12,'Roll up with mustard, or wrap in a tortilla.','B07NRZ7MF5',{t:1}],
+    ['turkey6','turkey6','365 Oven-Roasted Turkey, Ultra-Thin','6 oz','$4.99','5 slices (56 g)',60,12,'Smaller pack of the same thing.','B07NRYW3XM'],
+    ['smturkey','smturkey','365 Smoked Turkey, Sliced','6 oz','$4.99','4 slices (56 g)',60,12,'Smoky; good with cottage cheese on a wrap.','B07NRVJTMQ'],
+    ['applenat','applenat','Applegate Naturals Oven Roasted Turkey Breast','7 oz','$7.49','2 slices (55 g)',50,11,'Straight from the pack or in a wrap.','B01ABQN1PI'],
+    ['appleorg','appleorg','Applegate Organics Oven Roasted Turkey Breast','6 oz','$7.99','2 slices (55 g)',50,11,'Organic version of the above.','B00I2VLK2Q'],
+    ['chick6','chick6','365 Sliced Oven Roasted Chicken','6 oz','$4.99','4 slices (56 g)',70,12,'Chicken instead of turkey for wraps.','B096C3WKRN'],
+    ['chickorg','chickorg','365 Organic Oven Roasted Sliced Chicken','6 oz','$5.99','~3 slices (57 g)',60,11,'Same, organic.','B0CLFH763M']
+   ]},
+   {s:'Prepared Foods · hot case & grab-and-go', w:'Near the hot bar / rotisserie warmer and the cold grab-and-go fridge.', i:[
+    ['rotis','rotis','WFM Organic Classic Rotisserie Chicken','whole bird','$13.79','3 oz',170,15,'Pull the breast meat off the bone. Label is skin-on; skinless breast is ≈19 P/100.','B07FZ921F3',{t:1}],
+    ['grilled','grilled','WFM Kitchens Grilled Chicken Breast (Paleo)','by weight','$19.49/lb','3 oz',130,17,'Slice cold into a wrap or eat with a yogurt dip.','B0FPGBL44S']
+   ]},
+   {s:'Meat case · fully cooked', w:'Back wall meat case, usually near the sausages and packaged chicken.', i:[
+    ['strips','strips','365 Grilled Fully Cooked Chicken Strips','12 oz','$9.49','3 oz (84 g)',90,17,'Ready to eat cold; wrap or bowl.','B0D98SQKGP'],
+    ['shredded','shredded','Applegate Naturals Roasted Shredded Chicken Breast','8 oz','$7.99','≈3 oz',100,20,'Mix with Greek yogurt + mustard for chicken salad.','B0GL9R6QCY',{a:1}]
+   ]},
+   {s:'Seafood · counter case & frozen seafood', w:'Smoked fish sits in the refrigerated seafood case; cooked shrimp is in the frozen seafood doors.', i:[
+    ['shrimp','shrimp','365 Cooked Shrimp, 41–55 count (frozen)','32 oz','$23.99','3 oz (~9 shrimp)',80,18,'Thaw in the fridge or cold water, then shrimp cocktail.','B07NRD9H73'],
+    ['ring','ring','Chicken of the Sea Shrimp Cocktail Ring (frozen)','10 oz','$9.99','≈3 oz + sauce',90,13,'Thaw and eat; sauce included.','B0FZDNG6XT',{a:1}],
+    ['salmon365','salmon365','365 Cold Smoked Atlantic Salmon','12 oz','$22.99','2 oz (57 g)',120,13,'On a wrap with cottage cheese, or as is.','B0CN1PGWBQ'],
+    ['salmoncs','salmoncs','Changing Seas Cold Smoked Salmon','4 oz','$9.99','2 oz (57 g)',90,11,'Smaller, leaner pack.','B074VBCLT8']
+   ]},
+   {s:'Pantry · canned fish & meat', w:'Canned goods aisle, near the tuna and soups.', i:[
+    ['skipjack','skipjack','365 Skipjack Tuna in Water, No Salt (6 pack)','6 × 5 oz','$12.49','4 oz drained',130,31,'Drain, mix with Greek yogurt + mustard.','B0CJRWP81Y'],
+    ['wpchick','wpchick','Wild Planet Organic Roasted Chicken Breast','5 oz can','$5.99','3 oz (85 g)',90,19,'Shelf-stable chicken for wraps.','B019QD714Y'],
+    ['pinksalmon','pinksalmon','Wild Planet Wild Pink Salmon, Sea Salt','3.75 oz','$5.29','≈2 oz',90,13,'Eat from the can or mash onto a wrap.','B0B6DC57FF',{a:1}]
+   ]},
+   {s:'Dairy · yogurt case', w:'Dairy wall, usually along a side or back wall.', i:[
+    ['chob20','chob20','Chobani 20g Protein Lowfat Greek Yogurt, Vanilla','6.7 oz cup','$2.39','1 cup',140,20,'Spoon it straight from the cup. (Oikos Pro isn\'t on the WF storefront.)','B0D3RF9J1V',{t:1,s:'swap for Oikos Pro',a:1}],
+    ['chobplain','chobplain','Chobani Non-Fat Plain Greek Yogurt','32 oz','$6.99','3/4 cup (170 g)',90,16,'Bowl with fruit, or the base of the wrap sauce.','B008U5OSTQ'],
+    ['siggis','siggis','siggi\'s Lower Sugar Skyr, Vanilla (4 ct)','4 × 5.3 oz','$7.59','1 cup (150 g)',100,14,'Grab-and-eat cup.','B08V7PVDMP'],
+    ['icelandic','icelandic','Icelandic Provisions Skyr, Peach & Cloudberry','5.3 oz','$2.49','1 cup',130,15,'Thicker, sweeter cup.','B01GV64R0K']
+   ]},
+   {s:'Dairy · cottage cheese', w:'Same dairy wall, next to the sour cream.', i:[
+    ['daisy','daisy','Daisy Low-Fat Cottage Cheese (2%)','16 oz','$3.99','1/2 cup (113 g)',90,13,'With fruit, on a wrap, or with smoked salmon. (Good Culture plain isn\'t on the storefront.)','B00LOAWOCW'],
+    ['cott365','cott365','365 Organic Cottage Cheese','16 oz','$4.99','1/2 cup (113 g)',110,12,'Same uses, organic.','B07FWC98WY']
+   ]},
+   {s:'Dairy · protein drinks', w:'Refrigerated drinks near the milk and yogurt drinks.', note:1, i:[
+    ['chob30','chob30','Chobani 30g Protein Drink, Vanilla','14 fl oz','$4.59','1 bottle',180,30,'Drink cold. Closest WF-storefront swap for Fairlife / Core Power.','B0DQVTBCZ9',{t:1,s:'swap for Fairlife',a:1}],
+    ['chobdrink','chobdrink','Chobani 20g Greek Yogurt Drink, Strawberries & Cream','10 fl oz','$3.79','1 bottle',190,20,'On-the-go breakfast.','B08BJW9TNZ',{a:1}],
+    ['koia','koia','Koia Elite Plant Protein Shake, Vanilla','12 fl oz','$5.29','1 bottle',210,32,'Dairy-free option.','B0DGGTTG6L']
+   ]},
+   {s:'Snack aisle · jerky & meat sticks', w:'Jerky section, often near nuts and trail mix or at checkout.', i:[
+    ['chomps','chomps','Chomps Original Turkey Sticks (8 ct)','8 × 1.15 oz','$19.99','1 stick (32 g)',80,12,'Pocket snack.','B0D6PJGTZR'],
+    ['archer','archer','Archer Mini Turkey Sticks (16 ct)','16 × 0.46 oz','$16.99','1 stick (13 g)',35,4,'Tiny bites; 3 sticks ≈ 12 g P.','B0D82RJ9N4']
+   ]},
+   {s:'Refrigerated · eggs & plant protein', w:'Near the eggs and the tofu / plant-protein fridge.', i:[
+    ['eggbites','eggbites','365 Egg White Bites, Spinach Basil Feta','4.2 oz (2 bites)','$4.39','2 bites (119 g)',120,12,'Eat cold or 30 s in the microwave.','B07YHDQXZZ'],
+    ['hodo','hodo','Hodo Miso Organic Tofu','~10 oz','$6.49','3 oz (85 g)',110,13,'Already marinated; slice and eat cold.','B0C5YB4PL3'],
+    ['seitan','seitan','Blackbird Seitan Strips, Original','8 oz','$7.29','~2.5 oz (76 g)',90,17,'Cooked; good cold in a wrap.','B07D6VTR8F']
+   ]},
+   {s:'Bread & wraps', w:'Tortillas are in the bread aisle; Egglife wraps are in the fridge near the eggs.', i:[
+    ['carbbueno','carbbueno','Maria & Ricardo\'s Carb Bueno Whole Wheat Tortillas','7.9 oz (8 ct)','$3.99','1 tortilla (28 g)',45,3,'The carrier for wraps (your usual one; not a protein source).','B00EE2VFXQ',{t:1}],
+    ['egglife','egglife','Egglife Original Egg White Wraps (6 ct)','6 oz','$7.19','1 wrap (28 g)',25,5,'Higher-protein wrap; use cold.','B08KGT4BD5']
+   ]}
+  ];
+  var NOTE='<div class="note">Consumer Reports (2024) found Core Power chocolate shakes had the highest phthalates (plastic-softening chemicals) of the dairy it tested, though below legal limits. No microplastics data exists for Fairlife, and plain Fairlife milk wasn\'t tested. Fine occasionally; for daily protein, Greek yogurt or cottage cheese are lower-plastic picks. <a href="https://www.consumerreports.org/health/food-contaminants/the-plastic-chemicals-hiding-in-your-food-a7358224781/" target="_blank" rel="noopener">Consumer Reports article</a></div>';
+  var KEY='wfqr-', list=document.getElementById('list'), all=[];
+  function get(id){try{return localStorage.getItem(KEY+id)==='1'}catch(e){return false}}
+  function set(id,v){try{v?localStorage.setItem(KEY+id,'1'):localStorage.removeItem(KEY+id)}catch(e){}}
+  S.forEach(function(sec){
+    var el=document.createElement('section');
+    el.innerHTML='<h2>'+sec.s+'</h2><p class="where">'+sec.w+'</p>';
+    sec.i.forEach(function(it){
+      var f=it[10]||{}, pp=(it[7]/it[6]*100).toFixed(1), d=document.createElement('label');
+      all.push({id:it[0],n:it[2],size:it[3],top:!!f.t,el:d});
+      d.className='item'+(f.t?' top':'')+(get(it[0])?' on':'');
+      d.innerHTML='<input type="checkbox"'+(get(it[0])?' checked':'')+'><img class="ph" loading="lazy" src="img/'+it[1]+'.jpg" alt="">'+
+        '<div><div class="name">'+it[2]+(f.t?'<span class="tag">★ TOP 5</span>':'')+(f.s?'<span class="tag sub">'+f.s+'</span>':'')+'</div>'+
+        '<div class="meta"><b>'+it[3]+'</b> · '+it[4]+' · '+(f.a?'≈':'')+it[6]+' kcal / '+it[7]+' g P per '+it[5]+' <span class="pp">'+(f.a?'≈':'')+pp+' P/100</span></div>'+
+        '<div class="use">'+it[8]+'</div><a class="lnk" href="'+L+it[9]+Q+'" target="_blank" rel="noopener">Whole Foods listing ›</a></div>';
+      var cb=d.querySelector('input');
+      cb.addEventListener('change',function(){d.classList.toggle('on',cb.checked);set(it[0],cb.checked);upd()});
+      el.appendChild(d);
+    });
+    if(sec.note) el.insertAdjacentHTML('beforeend',NOTE);
+    list.appendChild(el);
+  });
+  function picks(){return all.filter(function(x){return get(x.id)})}
+  function upd(){document.getElementById('count').textContent=picks().length+' picked'}
+  document.getElementById('reset').addEventListener('click',function(){all.forEach(function(x){set(x.id,false);x.el.classList.remove('on');x.el.querySelector('input').checked=false});upd()});
+  var tb=document.getElementById('topOnly');
+  tb.addEventListener('click',function(){var on=tb.getAttribute('aria-pressed')!=='true';tb.setAttribute('aria-pressed',on);
+    all.forEach(function(x){x.el.hidden=on&&!x.top});
+    document.querySelectorAll('#list section').forEach(function(s){s.hidden=on&&!s.querySelector('.item:not([hidden])')})});
+  document.getElementById('copy').addEventListener('click',function(){
+    var t='WF picks:\n'+picks().map(function(x){return '- '+x.n+' ('+x.size+')'}).join('\n'), b=this;
+    function ok(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy my picks'},1500)}
+    if(navigator.clipboard){navigator.clipboard.writeText(t).then(ok,function(){prompt('Copy:',t)})}else{prompt('Copy:',t)}});
+  upd();
+})();
+</script>
+</body>
+</html>
