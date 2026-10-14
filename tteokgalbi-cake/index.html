@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WF Tteokgalbi + Cake</title>
+<style>
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --ink:#1f2a22; --muted:#6b7268; --line:#dcdcd2;
+  --accent:#2f6b45; --accent-soft:#e3efe6; --top:#9a5b00; --top-soft:#fbeed6; --warn-soft:#f1efe8;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121713; --card:#1b221d; --ink:#e9eee8; --muted:#9aa49b; --line:#2d372f;
+  --accent:#6fbf8b; --accent-soft:#1f3326; --top:#f0b45a; --top-soft:#3a2c14; --warn-soft:#1f2420; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121713; --card:#1b221d; --ink:#e9eee8; --muted:#9aa49b; --line:#2d372f;
+  --accent:#6fbf8b; --accent-soft:#1f3326; --top:#f0b45a; --top-soft:#3a2c14; --warn-soft:#1f2420; color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.4}
+.wrap{max-width:600px;margin:0 auto;padding:0 16px 56px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 10px;border-bottom:1px solid var(--line)}
+h1{font-size:20px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 8px}
+.bar{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.bar button,.chip{background:var(--accent-soft);color:var(--accent);border:0;border-radius:6px;padding:5px 10px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--card)}
+.legend{font-size:12px;color:var(--muted);margin:12px 0 0}
+section{margin-top:22px}
+h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 2px}
+.where{font-size:12.5px;color:var(--muted);margin:0 0 6px}
+.item{display:grid;grid-template-columns:26px 72px minmax(0,1fr);gap:10px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px}
+.item.top{border-color:var(--top);box-shadow:inset 3px 0 0 var(--top)}
+.item.on{background:var(--accent-soft)}
+.item input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--accent)}
+.ph{width:72px;height:72px;background:#fff;border-radius:6px;object-fit:contain;padding:3px}
+.name{font-weight:600;font-size:14.5px}
+.meta{font-size:12.5px;color:var(--muted);margin-top:2px}
+.meta b{color:var(--ink);font-weight:600}
+.pp{display:inline-block;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:0 5px;font-size:12px}
+.item.on .pp{background:var(--card)}
+.use{font-size:13px;margin-top:3px}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:1px;background:var(--top-soft);color:var(--top)}
+.tag.sub{background:var(--warn-soft);color:var(--muted)}
+a.lnk{font-size:12.5px;color:var(--accent);font-weight:600}
+.note{background:var(--warn-soft);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--muted);margin-top:8px}
+.note a{color:var(--accent)}
+.combos{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 14px;margin-top:8px}
+.combos li{margin:8px 0;font-size:14px}
+.foot{font-size:12px;color:var(--muted);margin-top:24px}
+.need{display:inline-block;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:0 5px;font-size:12px}
+.item.on .need{background:var(--card)}
+.kcal{display:inline-block;font-weight:700;color:var(--top);background:var(--top-soft);border-radius:4px;padding:0 5px;font-size:12px}
+.tag.no{background:#f6dcdc;color:#9b2c2c}
+:root[data-theme="dark"] .tag.no{background:#3a1d1d;color:#f0a0a0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag.no{background:#3a1d1d;color:#f0a0a0}}
+table.nonut{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+table.nonut td{border-top:1px solid var(--line);padding:5px 4px;vertical-align:top}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>WF run · tteokgalbi + cake</h1>
+    <p class="sub">Grouped by store section. Tick what you grab; ★ = main pick, ALT = backup if the main one is missing.</p>
+    <div class="bar"><span id="count">0 picked</span>
+      <button class="chip" id="topOnly" type="button" aria-pressed="false">★ only</button>
+      <button id="copy" type="button">Copy my picks</button>
+      <button id="reset" type="button">Reset</button></div>
+  </header>
+  <p class="legend"><span class="need">need</span> = grams the recipe uses. <span class="kcal">kcal</span> = from the Nutrition Facts on the Whole Foods Amazon listing (per serving × servings = whole pack). Prices are from the WF Amazon listing (checked 14 Oct 2026) and can differ in store. Listings don't show aisle numbers, and they vary by store, so sections are by department.</p>
+  <main id="list"></main>
+  <section>
+    <h2>Bakery · no calories listed (skip if you're logging)</h2>
+    <p class="where">These came up in the search, but their WF listing has no Nutrition Facts panel.</p>
+    <table class="nonut">
+      <tr><td>WFM Vanilla Sprinkle Cupcakes 6 ct</td><td>$11.99</td></tr>
+      <tr><td>WFM Colorful Buttercream Cupcakes 6 ct</td><td>$11.99</td></tr>
+      <tr><td>WFM Kitchens Mini Vegan Vanilla Cupcakes 12 pk</td><td>$7.99</td></tr>
+      <tr><td>WFM Kitchens Mini Vegan Chocolate Cupcakes 12 pk</td><td>$7.99</td></tr>
+      <tr><td>Rubicon Lemon Raspberry Cupcakes 4 ct</td><td>$6.99</td></tr>
+    </table>
+  </section>
+  <p class="foot">Not on the WF storefront: Korean garae-tteok rice cakes (searched tteok, garaetteok, topokki, tteokbokki, Korean rice cake, Pulmuone; only puffed Lundberg rice cakes came up), sake and Shaoxing rice wine. There's no ready-made marble or half-and-half cake listed, and no WF-bakery vanilla cake with chocolate frosting.</p>
+</div>
+
+<script>
+(function(){
+  var L='https://www.amazon.com/dp/', Q='?almBrandId=VUZHIFdob2xlIEZvb2Rz';
+  // [id, img, name, size, price, badge-html, use, asin, flags]  flags: t=main pick, s=tag text, k=kcal text, no=no nutrition
+  var S=[
+   {s:'Meat · butcher counter', w:'Service meat counter, back of the store. Ask for <b>boneless beef short rib, ground twice through the fine plate</b>, about 600 g (1.35 lb). They can only grind in store; an online order arrives as whole pieces.', i:[
+    ['shortrib','shortrib','Beef Chuck Short Rib, Boneless','by weight · ask 1.35 lb','$13.49/lb · ≈ $18.20','600 g','Ground twice, fine, for the patties. If you order online, cut into cubes, chill 15 min and pulse in the mini chopper in small batches.','B0FK5KHZKD',{t:1}],
+    ['shortribbone','shortribbone','Beef Chuck Short Rib, Bone-In','by weight · ~2.5 lb','$12.99/lb · ≈ $32','600 g meat','Only if boneless is out. Bone-in yields about half meat, so ask the butcher to debone and grind it.','B0FK5FTMG4',{s:'ALT'}]
+   ]},
+   {s:'Produce', w:'Produce section by the entrance. Garlic, ginger and onions are usually together; scallions and chives sit with the herbs.', i:[
+    ['garlic','garlic','Organic Garlic','1 large head','$0.98 ($6.99/lb)','50 g','30 g thick slices + 20 g minced in the meat.','B0788FLWK1',{t:1}],
+    ['asianpear','asianpear','Asian Pear','1 each (~300–400 g)','$2.23 ($3.99/lb)','40 g','Grated into the meat to tenderize and sweeten.','B07HMBYRZL',{t:1}],
+    ['asianpearorg','asianpearorg','Organic Asian Brown Pear','1 each','$4.09','40 g','Organic version.','B07FZJ3HP6',{s:'ALT'}],
+    ['bosc','bosc','Organic Bosc Pear','1 each','≈ $1.15–2.95','40 g','If no Asian pear: a ripe, firm Bosc grates well.','B003TQBYKC',{s:'ALT'}],
+    ['fuji','fuji','Organic Fuji Apple','1 each','$1.53 ($3.19/lb)','40 g','Second fallback: sweet and crisp, works the same way.','B000YTXXDI',{s:'ALT'}],
+    ['onion','onion','Yellow Onion','1 small','$0.63 ($1.49/lb)','40 g','Finely grated or minced into the meat.','B07QTZBZ2C',{t:1}],
+    ['scallions','scallions','Green Onions (Scallions)','1 bunch (~100 g)','$0.99','25 g','15 g whites in the meat + 10 g greens for garnish.','B002B9280S',{t:1}],
+    ['chives','chives','Organic Chives','0.75 oz clamshell','$2.99','10 g','Garnish only, for the Moono look. Still buy scallions for the meat.','B079JT3M9N',{s:'ALT'}],
+    ['ginger','ginger','Organic Ginger Root','small knob ~30 g','$6.99/lb · ≈ $0.25','4 g','Break off a thumb-tip piece; it’s sold by weight.','B0C6V3416T',{t:1}]
+   ]},
+   {s:'Asian / international aisle', w:'Next to the soy sauce and rice vinegar.', i:[
+    ['mirin','mirin','Eden Mirin Rice Cooking Wine','10.1 fl oz','$13.99–16.95','30 g','Goes in the glaze. If it’s missing, use 25 g dry white wine + 5 g sugar, or skip it and add 5 g extra sugar.','B0019JRIN8',{t:1}]
+   ]},
+   {s:'Rice cakes · not at Whole Foods', w:'<b>Garae-tteok (thick cylinder rice cakes) aren’t on the WF storefront.</b> Buy ~500 g at H Mart or a Korean grocer (look for thick cylinders, not thin ovals; Hansang 1.1 lb worked last time). WF backup below.', i:[
+    ['gnocchi','gnocchi','365 Potato Gnocchi (vegan)','16 oz','$2.79','300 g','Not the same chew, but it pan-sears golden in the skillet and takes the glaze. Brown in a single layer before glazing.','B0CJ9ZHT9B',{s:'ALT'}]
+   ]},
+   {s:'Bakery · vanilla + chocolate (calories listed)', w:'Bakery case and the packaged-cake shelf next to it. Each one has a Nutrition Facts panel on its listing.', i:[
+    ['bwcake','bwcake','By The Way Bakery Black & White Layer Cake','30 oz (850 g)','$24.99','','Chocolate layers with white (vanilla) frosting. The closest match to vanilla + chocolate. Gluten-free, dairy-free.','B085JKPNRM',{t:1,k:'340 kcal / slice (80 g) × 11 = 3,740 kcal'}],
+    ['rubchoc','rubchoc','Rubicon Bakers Chocolate Delights Cupcakes','4 ct · 10 oz','$7.19','','Chocolate cupcake filled with vanilla cream, chocolate on top. Easy to log because each one is a single serving.','B07FYCTGX9',{t:1,k:'230 kcal / cupcake (71 g) × 4 = 920 kcal'}],
+    ['rubvan','rubvan','Rubicon Bakers Vanilla Cupcakes (vegan)','4 ct · 10 oz','$6.99','','Pair with Chocolate Delights for a half-vanilla, half-chocolate box.','B07GL8W9HF',{t:1,s:'HALF/HALF',k:'310 kcal / cupcake × 4 = 1,240 kcal'}],
+    ['rubneap','rubneap','Rubicon Bakers Neapolitan Cupcakes (vegan)','4 ct · 10 oz','$6.99','','Chocolate cake, vanilla cream filling, strawberry frosting.','B07PPVDV11',{s:'ALT',k:'300 kcal / cupcake (71 g) × 4 = 1,200 kcal'}],
+    ['rubdouble','rubdouble','Rubicon Bakery Double Layer Chocolate Cake','21 oz','$13.99','','All chocolate. The lowest-calorie whole cake here.','B0785WV3S7',{s:'ALT',k:'240 kcal / ⅛ cake (74 g) × 8 = 1,920 kcal'}],
+    ['vansprinkle','vansprinkle','By The Way Bakery Vanilla Sprinkle Cake','33 oz','$24.99','','All vanilla, gluten-free.','B085JKKJYG',{s:'ALT',k:'360 kcal / piece (80 g) × 11 = 3,960 kcal'}],
+    ['btwchoc','btwchoc','By The Way Bakery Chocolate Cake','37 oz','$24.99','','All chocolate, gluten-free.','B085JJZZP3',{s:'ALT',k:'350 kcal / slice (80 g) × 13 = 4,550 kcal'}],
+    ['mousse6','mousse6','WFM Chocolate Mousse Cake 6"','6 inch','$26.00','','WF bakery, all chocolate.','B09XBDD5WN',{s:'ALT',k:'380 kcal / slice × 8 = 3,040 kcal'}],
+    ['eruption','eruption','WFM Chocolate Eruption Cake 6"','32 oz','$30.00','','WF bakery, rich all-chocolate.','B09H7332G4',{s:'ALT',k:'480 kcal / slice × 8 = 3,840 kcal'}],
+    ['eruptslice','eruptslice','WFM Chocolate Eruption Cake Slice','1 slice','$4.99','','Single slice, if you just want one serving.','B0D3F13QBG',{s:'ALT',k:'480 kcal / slice × 1'}],
+    ['rubconf','rubconf','Rubicon Bakers Confetti Birthday Cupcakes','4 ct · 10 oz','$7.19','','Vanilla birthday cupcake, no chocolate.','B094Z3R3QY',{s:'ALT',k:'300 kcal / cupcake (71 g) × 4 = 1,200 kcal'}]
+   ]}
+  ];
+  var KEY='wftc-', list=document.getElementById('list'), all=[];
+  function get(id){try{return localStorage.getItem(KEY+id)==='1'}catch(e){return false}}
+  function set(id,v){try{v?localStorage.setItem(KEY+id,'1'):localStorage.removeItem(KEY+id)}catch(e){}}
+  S.forEach(function(sec){
+    var el=document.createElement('section');
+    el.innerHTML='<h2>'+sec.s+'</h2><p class="where">'+sec.w+'</p>';
+    sec.i.forEach(function(it){
+      var f=it[8]||{}, d=document.createElement('label');
+      all.push({id:it[0],n:it[2],size:it[3],top:!!f.t,el:d});
+      d.className='item'+(f.t?' top':'')+(get(it[0])?' on':'');
+      d.innerHTML='<input type="checkbox"'+(get(it[0])?' checked':'')+'><img class="ph" loading="lazy" src="img/'+it[1]+'.jpg" alt="">'+
+        '<div><div class="name">'+it[2]+(f.t?'<span class="tag">★</span>':'')+(f.s?'<span class="tag sub">'+f.s+'</span>':'')+'</div>'+
+        '<div class="meta"><b>'+it[3]+'</b> · '+it[4]+(it[5]?' · <span class="need">need '+it[5]+'</span>':'')+'</div>'+
+        (f.k?'<div class="meta"><span class="kcal">'+f.k+'</span></div>':'')+
+        '<div class="use">'+it[6]+'</div><a class="lnk" href="'+L+it[7]+Q+'" target="_blank" rel="noopener">Whole Foods listing ›</a></div>';
+      var cb=d.querySelector('input');
+      cb.addEventListener('change',function(){d.classList.toggle('on',cb.checked);set(it[0],cb.checked);upd()});
+      el.appendChild(d);
+    });
+    list.appendChild(el);
+  });
+  function picks(){return all.filter(function(x){return get(x.id)})}
+  function upd(){document.getElementById('count').textContent=picks().length+' picked'}
+  document.getElementById('reset').addEventListener('click',function(){all.forEach(function(x){set(x.id,false);x.el.classList.remove('on');x.el.querySelector('input').checked=false});upd()});
+  var tb=document.getElementById('topOnly');
+  tb.addEventListener('click',function(){var on=tb.getAttribute('aria-pressed')!=='true';tb.setAttribute('aria-pressed',on);
+    all.forEach(function(x){x.el.hidden=on&&!x.top});
+    document.querySelectorAll('#list section').forEach(function(s){s.hidden=on&&!s.querySelector('.item:not([hidden])')})});
+  document.getElementById('copy').addEventListener('click',function(){
+    var t='WF picks:\n'+picks().map(function(x){return '- '+x.n+' ('+x.size+')'}).join('\n'), b=this;
+    function ok(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy my picks'},1500)}
+    if(navigator.clipboard){navigator.clipboard.writeText(t).then(ok,function(){prompt('Copy:',t)})}else{prompt('Copy:',t)}});
+  upd();
+})();
+</script>
+</body>
+</html>
